@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: microservice1
+  labels:
+    app: microservice1
+spec:
+  selector:
+    matchLabels:
+      app: microservice1
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: microservice1
+    spec:
+      containers:
+        - name: microservice1
+          image: ioooikaak/microservice1:2.0.0
+          imagePullPolicy: Always
+          ports:
+           - containerPort: 5998
+             name: microservice1
+             protocol: TCP
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "1000m"
+            limits:
+              memory: "4Gi"
+              cpu: "2000m"
+          #volumeMounts:
+            #- mountPath: /var/lib/microservice1
+              #name: data-microservice1
+  #updateStrategy:
+    #type: OnDelete
+  #volumeClaimTemplates:
+    #- metadata:
+        #name: data-microservice1
+      #spec:
+        #accessModes: [ "ReadWriteMany" ]
+        #storageClassName: storageclass-default
+        #resources:
+          #requests:
+            #storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: microservice1
+  labels:
+    app: microservice1
+spec:
+  #type: ClusterIP
+  clusterIP: None
+  ports:
+  - port: 5998
+    protocol: TCP
+    name: microservice1
+  selector:
+    app: microservice1

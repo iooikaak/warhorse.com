@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: job
+  labels:
+    app: job
+spec:
+  selector:
+    matchLabels:
+      app: job
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: job
+    spec:
+      containers:
+        - name: job
+          image: ioooikaak/job:2.0.0
+          imagePullPolicy: Always
+          ports:
+           - containerPort: 6000
+             name: job
+             protocol: TCP
+          #resources:
+            #requests:
+              #memory: "1Gi"
+              #cpu: "1000m"
+            #limits:
+              #memory: "4Gi"
+              #cpu: "2000m"
+          #volumeMounts:
+            #- mountPath: /var/lib/job
+              #name: data-job
+  #updateStrategy:
+    #type: OnDelete
+  #volumeClaimTemplates:
+    #- metadata:
+        #name: data-job
+      #spec:
+        #accessModes: [ "ReadWriteMany" ]
+        #storageClassName: storageclass-default
+        #resources:
+          #requests:
+            #storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: job
+  labels:
+    app: job
+spec:
+  type: NodePort
+  ports:
+  - port: 6000
+    name: job
+  selector:
+    app: job
